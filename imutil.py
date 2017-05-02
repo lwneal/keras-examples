@@ -9,14 +9,15 @@ from StringIO import StringIO
 
 # Input: Numpy array containing one or more images
 # Output: JPG encoded image bytes
-def encode_jpg(pixels):
+def encode_jpg(pixels, resize_to=None):
     while len(pixels.shape) > 3:
         pixels = combine_images(pixels)
     # Convert to RGB to avoid "Cannot handle this data type"
-    import pdb; pdb.set_trace()
     if pixels.shape[-1] < 3:
         pixels = np.repeat(pixels, 3, axis=-1)
     img = Image.fromarray(pixels.astype(np.uint8))
+    if resize_to:
+        img = img.resize(resize_to)
     fp = StringIO()
     img.save(fp, format='JPEG')
     return fp.getvalue()
@@ -44,7 +45,7 @@ def decode_jpg(jpg, crop_to_box=None, resize_to=(224,224)):
 # Swiss-army knife for putting an image on the screen
 # Accepts numpy arrays, PIL Image objects, or jpgs
 # Numpy arrays can consist of multiple images, which will be collated
-def show(data, filename=None, box=None, video_filename=None):
+def show(data, filename=None, box=None, video_filename=None, resize_to=(224,224)):
     if type(data) == type(np.array([])):
         pixels = data
     elif type(data) == Image.Image:
@@ -63,12 +64,16 @@ def show(data, filename=None, box=None, video_filename=None):
         filename = tempfile.NamedTemporaryFile(suffix='.jpg').name
 
     with open(filename, 'w') as fp:
-        fp.write(encode_jpg(pixels))
+        fp.write(encode_jpg(pixels, resize_to=resize_to))
         fp.flush()
         # Display image in the terminal if an appropriate program is available
         for prog in ['imgcat', 'feh', 'display']:
             if spawn.find_executable(prog):
+                print('\n' * 14)
+                print('\033[14F')
                 os.system('{} {}'.format(prog, filename))
+                print('\033[14B')
+                break
         else:
             print("Saved image size {} as {}".format(pixels.shape, filename))
 
