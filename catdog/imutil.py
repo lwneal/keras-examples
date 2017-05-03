@@ -56,6 +56,8 @@ def show(data, filename=None, box=None, video_filename=None, resize_to=(224,224)
     if box:
         draw_box(pixels, box)
 
+    if pixels.shape[-1] > 3:
+        pixels = np.expand_dims(pixels, axis=-1)
     while len(pixels.shape) < 3:
         pixels = np.expand_dims(pixels, axis=-1)
     while len(pixels.shape) > 3:
@@ -70,10 +72,11 @@ def show(data, filename=None, box=None, video_filename=None, resize_to=(224,224)
         # Display image in the terminal if an appropriate program is available
         for prog in ['imgcat', 'catimg', 'feh', 'display']:
             if spawn.find_executable(prog):
-                print('\n' * 14)
-                print('\033[14F')
+                # Tmux hack
+                #print('\n' * 14)
+                #print('\033[14F')
                 subprocess.check_call([prog, filename])
-                print('\033[14B')
+                #print('\033[14B')
                 break
         else:
             print("Saved image size {} as {}".format(pixels.shape, filename))
