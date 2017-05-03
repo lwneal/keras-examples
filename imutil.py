@@ -1,6 +1,7 @@
 import math
 import os
 import tempfile
+import subprocess
 from distutils import spawn
 import numpy as np
 from PIL import Image
@@ -67,11 +68,11 @@ def show(data, filename=None, box=None, video_filename=None, resize_to=(224,224)
         fp.write(encode_jpg(pixels, resize_to=resize_to))
         fp.flush()
         # Display image in the terminal if an appropriate program is available
-        for prog in ['imgcat', 'feh', 'display']:
+        for prog in ['imgcat', 'catimg', 'feh', 'display']:
             if spawn.find_executable(prog):
                 print('\n' * 14)
                 print('\033[14F')
-                os.system('{} {}'.format(prog, filename))
+                subprocess.check_call([prog, filename])
                 print('\033[14B')
                 break
         else:
