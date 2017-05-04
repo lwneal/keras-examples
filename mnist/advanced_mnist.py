@@ -39,11 +39,11 @@ model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=
 model.summary()
 
 while True:
-    # This is all the same as before
-    model.fit(x_train, y_train, epochs=1)
     i = np.random.randint(len(x_test))
-    x = x_test[i:i+4]
+    x = x_test[i:i+9]
     show(x)
     y = model.predict(x)
     y = np.argmax(y, axis=-1)
-    print("I think these numbers are {}".format(y))
+    print("I think these numbers are: {}".format(y))
+
+    model.fit(x_train, y_train, epochs=1)
