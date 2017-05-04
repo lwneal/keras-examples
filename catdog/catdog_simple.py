@@ -1,3 +1,4 @@
+import time
 import os
 import random
 from imutil import show, decode_jpg
@@ -27,7 +28,7 @@ vgg = applications.vgg16.VGG16()
 CAT_CLASSES = range(281, 294)
 DOG_CLASSES = range(151, 275)
 
-for _ in range(10):
+for _ in range(1000):
     image = random.choice(cats + dogs)
     image = np.expand_dims(image, axis=0)
     pred = vgg.predict(image)
@@ -42,3 +43,4 @@ for _ in range(10):
     else:
         print("I don't know what this is")
     print('\n')
+    time.sleep(.5)
